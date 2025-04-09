@@ -4,8 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -17,12 +19,24 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.image} source={require('../../assets/bg/ellipse1.png')} />
+      <Image style={styles.image} source={require('../../assets/bg/ellipse2.png')} />
 
-      <Text style={styles.title}>Chào mừng bạn</Text>
-      <Text style={styles.subtitle}>Đăng nhập tài khoản</Text>
+      <Text style={styles.title}>Đăng ký</Text>
+      <Text style={styles.subtitle}>Tạo tài khoản</Text>
 
-      {/* Email */}
+      <TextInput
+        style={[
+          styles.inputWrapper,
+          focusedInput === 'name' && styles.inputFocused
+        ]}
+        placeholder='Họ tên'
+        placeholderTextColor='#8b8b8b'
+        value={email}
+        onChangeText={setEmail}
+        onFocus={() => setFocusedInput('name')}
+        onBlur={() => setFocusedInput(null)}
+      />
+
       <TextInput
         style={[
           styles.inputWrapper,
@@ -37,9 +51,22 @@ const LoginScreen = () => {
         keyboardType='email-address'
         autoCapitalize='none'
       />
-      {!!emailError && <Text style={styles.error}>{emailError}</Text>}
 
-      {/* Mật khẩu */}
+      <TextInput
+        style={[
+          styles.inputWrapper,
+          focusedInput === 'phone-number' && styles.inputFocused
+        ]}
+        placeholder='Số điện thoại'
+        placeholderTextColor='#8b8b8b'
+        value={email}
+        onChangeText={setEmail}
+        onFocus={() => setFocusedInput('phone-number')}
+        onBlur={() => setFocusedInput(null)}
+        keyboardType='phone-pad'
+        autoCapitalize='none'
+      />
+
       <View style={[styles.inputWrapper, focusedInput === 'password' && styles.inputFocused]}>
         <TextInput
           placeholder="Mật khẩu"
@@ -58,36 +85,18 @@ const LoginScreen = () => {
           />
         </Pressable>
       </View>
-      {!!passwordError && <Text style={styles.error}>{passwordError}</Text>}
 
-      {/* Nhớ tài khoản & Quên mật khẩu */}
-      <View style={styles.row}>
-        <View style={styles.checkboxContainer}>
-        <Pressable onPress={() => setRememberMe(!rememberMe)} style={styles.checkboxContainer}>
-          <Ionicons
-            name={rememberMe ? 'checkbox' : 'square-outline'}
-            size={22}
-            color="#007537"
-          />
-          <Text style={styles.rememberText}>Nhớ tài khoản</Text>
-        </Pressable>
-        </View>
-        <Text style={styles.forgotText}>Quên mật khẩu ?</Text>
-      </View>
-
-      {/* Đăng nhập */}
       <Pressable style={{ width: '80%' }}>
         <LinearGradient
           colors={[ '#007357', '#4caf50' ]}
-          style={styles.loginButton}
+          style={styles.signupButton}
           start={[0, 0]}
           end={[1, 0]}
         >
-          <Text style={styles.loginText}>Đăng nhập</Text>
+          <Text style={styles.signupText}>Đăng ký</Text>
         </LinearGradient>
       </Pressable>
 
-      {/* Divider */}
       <View style={styles.dividerContainer}>
         <View style={styles.divider} />
         <Text style={styles.or}>Hoặc</Text>
@@ -99,15 +108,15 @@ const LoginScreen = () => {
         <Ionicons name="logo-facebook" size={32} color="#1877f2" style={{ marginLeft: 24 }} />
       </View>
 
-      <Text style={styles.signupText}>
-        Bạn không có tài khoản?{' '}
-        <Text style={styles.signupLink} onPress={() => navigation.navigate('Register')}>Tạo tài khoản</Text>
+      <Text style={styles.loginText}>
+        Tôi đã có tài khoản{' '}
+        <Text style={styles.loginLink} onPress={() => navigation.replace('Login')}>Đăng nhập</Text>
       </Text>
     </View>
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -118,8 +127,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '40%',
-    marginBottom: 10
+    height: '29%'
   },
   title: {
     fontSize: 30,
@@ -152,44 +160,12 @@ const styles = StyleSheet.create({
   inputFocused: {
     borderColor: '#009245'
   },
-  error: {
-    color: '#ce0000',
-    fontSize: 11,
-    fontWeight: '600',
-    marginBottom: 6
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: 16
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignContent: 'flex-start'
-  },
-  rememberText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#949090',
-    marginLeft: 8,
-    textAlign: 'center',
-    alignContent: 'flex-end'
-  },
-  forgotText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#009245'
-  },
-  loginButton: {
+  signupButton: {
     borderRadius: 15,
     paddingVertical: 14,
     alignItems: 'center',
   },
-  loginText: {
+  signupText: {
     color: '#fff',
     fontSize: 20,
     fontWeight: '700',
@@ -214,12 +190,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 30
   },
-  signupText: {
+  loginText: {
     textAlign: 'center',
     fontSize: 14,
     fontWeight: '400'
   },
-  signupLink: {
+  loginLink: {
     fontSize: 14,
     fontWeight: '400',
     color: '#009245'
