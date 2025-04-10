@@ -1,29 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import HomeScreen from '../screens/HomeScreen';
+import MainTabs from './MainTabs';
 
 export type RootStackParamList = {
     Welcome: undefined;
     Login: undefined;
     Register: undefined;
-    Home: undefined;
+    MainTabs: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const StackNavigator = () => {
+export default function StackNavigator() {
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        const checkLogin = async () => {
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            setIsLoggedIn(!!userInfo);
+        };
+        checkLogin();
+    }, []);
+
+    if (isLoggedIn === null) return null;
+
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={isLoggedIn ? 'MainTabs' : 'Welcome'}>
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="MainTabs" component={MainTabs} />
         </Stack.Navigator>
     );
 };
-
-export default StackNavigator;

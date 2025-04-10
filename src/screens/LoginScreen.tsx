@@ -9,13 +9,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -38,9 +37,12 @@ const LoginScreen = () => {
       if (rememberMe) {
         await AsyncStorage.setItem('userInfo', JSON.stringify(result[0]));
       }
-      navigation.replace('Home');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' }]
+      });
     } else {
-      setPasswordError('Sai email hoặc mật khẩu. Thử lại');
+      setLoginError('Sai email hoặc mật khẩu. Thử lại');
     }
   };
 
@@ -66,7 +68,6 @@ const LoginScreen = () => {
         keyboardType='email-address'
         autoCapitalize='none'
       />
-      {!!emailError && <Text style={styles.error}>{emailError}</Text>}
 
       {/* Mật khẩu */}
       <View style={[styles.inputWrapper, focusedInput === 'password' && styles.inputFocused]}>
@@ -87,7 +88,7 @@ const LoginScreen = () => {
           />
         </Pressable>
       </View>
-      {!!passwordError && <Text style={styles.error}>{passwordError}</Text>}
+      {!!loginError && <Text style={styles.error}>{loginError}</Text>}
 
       {/* Nhớ tài khoản & Quên mật khẩu */}
       <View style={styles.row}>
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
   },
   error: {
     color: '#ce0000',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
     marginBottom: 6
   },
@@ -193,12 +194,13 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: 16
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10
   },
   checkboxContainer: {
     flexDirection: 'row',
-    alignContent: 'flex-start'
+    alignContent: 'center'
   },
   rememberText: {
     fontSize: 14,
