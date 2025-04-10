@@ -1,21 +1,38 @@
-import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { API_URL } from '@env';
+import { registerUser } from '../services/api';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const navigation = useNavigation();
+
+  const handleRegister = async () => {
+    if (!name || !email || !phoneNumber || !password) {
+      Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin!');
+      return;
+    }
+
+    const existing = await fetch(`${API_URL}/users?email=${email}`);
+    const users = await existing.json();
+    if (users.length > 0) {
+      Alert.alert('Lỗi', 'Email đã tồn tại!');
+      return;
+    }
+
+    const newUser = await registerUser({ name, email, phoneNumber, password });
+    Alert.alert('Thành công', 'Đăng ký thành công, vui lòng đăng nhập lại');
+    navigation.replace('Login');
+  };
 
   return (
     <View style={styles.container}>
@@ -31,8 +48,8 @@ const RegisterScreen = () => {
         ]}
         placeholder='Họ tên'
         placeholderTextColor='#8b8b8b'
-        value={email}
-        onChangeText={setEmail}
+        value={name}
+        onChangeText={setName}
         onFocus={() => setFocusedInput('name')}
         onBlur={() => setFocusedInput(null)}
       />
@@ -59,8 +76,8 @@ const RegisterScreen = () => {
         ]}
         placeholder='Số điện thoại'
         placeholderTextColor='#8b8b8b'
-        value={email}
-        onChangeText={setEmail}
+        value={phoneNumber}
+        onChangeText={setPhoneNumber}
         onFocus={() => setFocusedInput('phone-number')}
         onBlur={() => setFocusedInput(null)}
         keyboardType='phone-pad'
@@ -86,7 +103,7 @@ const RegisterScreen = () => {
         </Pressable>
       </View>
 
-      <Pressable style={{ width: '80%' }}>
+      <Pressable style={{ width: '80%' }} onPress={handleRegister}>
         <LinearGradient
           colors={[ '#007357', '#4caf50' ]}
           style={styles.signupButton}

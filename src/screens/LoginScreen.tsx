@@ -1,8 +1,10 @@
 import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { loginUser } from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +16,33 @@ const LoginScreen = () => {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const saved = await AsyncStorage.getItem('userInfo');
+      if (saved) {
+        const user = JSON.parse(saved);
+        setEmail(user.email);
+        setPassword(user.password);
+        setRememberMe(true);
+      }
+    };
+    loadUser();
+  }, []);
+
+  const handleLogin = async () => {
+    const result = await loginUser(email, password);
+
+    if (result.length > 0) {
+      // Lưu thông tin người dùng vào AsyncStorage nếu có check "Nhớ tài khoản"
+      if (rememberMe) {
+        await AsyncStorage.setItem('userInfo', JSON.stringify(result[0]));
+      }
+      navigation.replace('Home');
+    } else {
+      setPasswordError('Sai email hoặc mật khẩu. Thử lại');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -76,7 +105,7 @@ const LoginScreen = () => {
       </View>
 
       {/* Đăng nhập */}
-      <Pressable style={{ width: '80%' }}>
+      <Pressable style={{ width: '80%' }} onPress={handleLogin}>
         <LinearGradient
           colors={[ '#007357', '#4caf50' ]}
           style={styles.loginButton}
