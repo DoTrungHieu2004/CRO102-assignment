@@ -6,12 +6,14 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import MainTabs from './MainTabs';
+import ProductDetailScreen from '../screens/ProductDetailScreen';
 
 export type RootStackParamList = {
     Welcome: undefined;
     Login: undefined;
     Register: undefined;
     MainTabs: undefined;
+    ProductDetail: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -35,6 +37,7 @@ export default function StackNavigator() {
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="MainTabs" component={MainTabs} />
+            <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
         </Stack.Navigator>
     );
 };
